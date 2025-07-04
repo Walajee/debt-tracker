@@ -8,6 +8,7 @@ function App() {
   const [form, setForm] = useState({ name: '', amount: '', due: '', description: '' });
   const [filter, setFilter] = useState("all");
   const [sortBy, setSortBy] = useState("");
+  const [editingId, setEditingId] = useState(null);
 
   useEffect(() => {
     const saved = localStorage.getItem("debts");
@@ -32,6 +33,12 @@ function App() {
 
   const markPaid = (id) => {
     setDebts(debts.map(debt => debt.id === id ? { ...debt, paid: !debt.paid } : debt));
+  };
+
+  const updateDueDate = (id, newDate) => {
+    setDebts(debts.map(debt =>
+      debt.id === id ? { ...debt, due: newDate } : debt
+    ));
   };
 
   const formatCurrency = (amount) =>
@@ -99,7 +106,21 @@ function App() {
             <tr key={debt.id}>
               <td>{debt.name}</td>
               <td>{formatCurrency(debt.amount)}</td>
-              <td>{debt.due}</td>
+              <td>
+                {editingId === debt.id ? (
+                  <input
+                    type="date"
+                    value={debt.due}
+                    onChange={(e) => updateDueDate(debt.id, e.target.value)}
+                    onBlur={() => setEditingId(null)}
+                    autoFocus
+                  />
+                ) : (
+                  <span onClick={() => setEditingId(debt.id)} style={{ cursor: "pointer", color: "#007bff" }}>
+                    {debt.due || "—"} ✎
+                  </span>
+                )}
+              </td>
               <td><input type="checkbox" checked={debt.paid} onChange={() => markPaid(debt.id)} /></td>
             </tr>
           ))}
