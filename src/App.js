@@ -7,6 +7,7 @@ function App() {
     return saved ? JSON.parse(saved) : [];
   });
   const [form, setForm] = useState({ name: "", amount: "", dueDate: "" });
+  const [filter, setFilter] = useState("");
 
   useEffect(() => {
     localStorage.setItem("debts", JSON.stringify(debts));
@@ -33,9 +34,19 @@ function App() {
     );
   };
 
+  const filteredDebts = debts.filter((d) =>
+    d.name.toLowerCase().includes(filter.toLowerCase())
+  );
+
   return (
     <div className="container">
       <h1>Debt Tracker</h1>
+      <input
+        className="filter"
+        placeholder="Filter by name..."
+        value={filter}
+        onChange={(e) => setFilter(e.target.value)}
+      />
       <div className="form">
         <input
           placeholder="Name"
@@ -56,7 +67,7 @@ function App() {
         <button onClick={addDebt}>Add</button>
       </div>
       <div className="debts">
-        {debts.map((d) => (
+        {filteredDebts.map((d) => (
           <div className="debt-card" key={d.id}>
             <div><strong>{d.name}</strong></div>
             <div>ILS {d.amount}</div>
